@@ -1,5 +1,3 @@
-#![allow(non_snake_case)]
-
 use copypasta_ext::prelude::*;
 mod mock;
 fn main() {
