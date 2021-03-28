@@ -1,8 +1,8 @@
-# RawR
+# RawR 0.2.0
 gIvInG fLaVoR tO yOuR kEyBoArD wArRiOr ShEnNaNiGaNs.
 
 ### Current features
   * Many flavors
-    * mOcKiNg/SpOnGeBoB tExT
+    * mOCkINg/SPongEBOb TExT
   * Many interfaces
-    * just pipes for now lol
+    * just clipboard for now lol

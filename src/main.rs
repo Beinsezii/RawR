@@ -6,6 +6,5 @@ fn main() {
     let mut clip = copypasta_ext::x11_bin::ClipboardContext::new().expect("ClipContext init fail");
     let mut buff = clip.get_contents().expect("Clip get fail");
     mock::mock(&mut buff, 1, 4);
-    println!("{}", buff);
     clip.set_contents(buff).expect("Clip set fail");
 }
