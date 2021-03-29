@@ -1,8 +1,94 @@
+use clap::{Arg, ArgGroup, App};
 use copypasta_ext::prelude::*;
 mod mock;
+
+fn mock_range_valid(arg: String) -> Result<(), String> {
+    let arg = arg.trim();
+    match arg.parse::<u32>() {
+        Ok(_) => return Ok(()),
+        Err(_) => (),
+    };
+
+    let words: Vec<&str> = arg.split("-").collect();
+    if words.len() == 2 {
+        match words[0].parse::<u32>() {
+            Ok(_) => { match words[1].parse::<u32>() {
+                Ok(_) => return Ok(()),
+                Err(_) => (),
+                };
+            },
+            Err(_) => (),
+        };
+    };
+
+    Err(String::from("Invalid mock-range value. Must be number or a positive range such as 2-5"))
+}
+
 fn main() {
-    let mut clip = copypasta_ext::x11_bin::ClipboardContext::new().expect("ClipContext init fail");
-    let mut buff = clip.get_contents().expect("Clip get fail");
-    mock::mock(&mut buff, 1, 4);
-    clip.set_contents(buff).expect("Clip set fail");
+    let mut clip = copypasta_ext::x11_bin::ClipboardContext::new().expect("Clip provider fail");
+
+    let args = App::new("RawR")
+        .author("Beinsezii")
+        .version("0.2.0")
+        .arg(Arg::with_name("mock")
+            .long("mock")
+        )
+        .arg(Arg::with_name("uwu")
+            .long("uwu")
+        )
+        .group(ArgGroup::with_name("flavor")
+            .args(&["mock", "uwu"])
+            .required(true)
+            .multiple(true)
+        )
+        .arg(Arg::with_name("mock-range")
+            .help("Controls minimum and maximum consecutive letters of a case. Number or range")
+            .long("mock-range")
+            .takes_value(true)
+            .default_value("1-4")
+            .validator(mock_range_valid)
+        )
+        .arg(Arg::with_name("clip-in")
+            .help("Read from system clipboard")
+            .short("c")
+            .long("clip-in")
+        )
+        .group(ArgGroup::with_name("input")
+            .args(&["clip-in"])
+            // .required(false)
+        )
+        .arg(Arg::with_name("clip-out")
+            .help("Output to system clipboard")
+            .short("C")
+            .long("clip-out")
+        )
+        .group(ArgGroup::with_name("output")
+            .args(&["clip-out"])
+            // .required(false)
+        )
+        .get_matches();
+
+    let mut buff = if args.is_present("clip-in") {
+        clip.get_contents().expect("Clip get fail")
+    } else {
+        panic!("Only clipboard input is implemented");
+    };
+
+    if args.is_present("mock") {
+        let vals = args.value_of("mock-range").unwrap().trim();
+        let (v1, v2) = match vals.parse::<u32>() {
+            Ok(v) => (v, v),
+            Err(_) => {
+                let nums: Vec<&str> = vals.split("-").collect();
+                (nums[0].parse::<u32>().unwrap(), nums[1].parse::<u32>().unwrap())
+            },
+        };
+        mock::mock(&mut buff, v1, v2);
+    }
+
+    if args.is_present("clip-out") {
+        clip.set_contents(buff).expect("Clip set fail");
+    } else {
+        panic!("Only clipboard output is implemented");
+    };
 }
