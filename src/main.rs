@@ -1,5 +1,6 @@
-use clap::{Arg, ArgGroup, App};
+use clap::{App, Arg, ArgGroup};
 use copypasta_ext::prelude::*;
+use std::io::prelude::*;
 mod mock;
 
 fn mock_range_valid(arg: String) -> Result<(), String> {
@@ -12,16 +13,19 @@ fn mock_range_valid(arg: String) -> Result<(), String> {
     let words: Vec<&str> = arg.split("-").collect();
     if words.len() == 2 {
         match words[0].parse::<u32>() {
-            Ok(_) => { match words[1].parse::<u32>() {
-                Ok(_) => return Ok(()),
-                Err(_) => (),
+            Ok(_) => {
+                match words[1].parse::<u32>() {
+                    Ok(_) => return Ok(()),
+                    Err(_) => (),
                 };
-            },
+            }
             Err(_) => (),
         };
     };
 
-    Err(String::from("Invalid mock-range value. Must be number or a positive range such as 2-5"))
+    Err(String::from(
+        "Invalid mock-range value. Must be number or a positive range such as 2-5",
+    ))
 }
 
 fn main() {
@@ -30,7 +34,10 @@ fn main() {
     let args = App::new("RawR")
         .author("Beinsezii")
         .version("0.2.0")
+        .about("Give your text some special flavor")
+        .long_about("Give your text some special flavor\nDefaults to reading/writing from stdin/stdout")
         .arg(Arg::with_name("mock")
+            .help("mOCkINg/SPongEBOb TExT")
             .long("mock")
         )
         .arg(Arg::with_name("uwu")
@@ -71,7 +78,11 @@ fn main() {
     let mut buff = if args.is_present("clip-in") {
         clip.get_contents().expect("Clip get fail")
     } else {
-        panic!("Only clipboard input is implemented");
+        let mut bytes: Vec<u8> = Vec::new();
+        std::io::stdin()
+            .read_to_end(&mut bytes)
+            .expect("Could not read stdin");
+        String::from_utf8(bytes).expect("Invalid UTF-8 for stdin")
     };
 
     if args.is_present("mock") {
@@ -80,15 +91,24 @@ fn main() {
             Ok(v) => (v, v),
             Err(_) => {
                 let nums: Vec<&str> = vals.split("-").collect();
-                (nums[0].parse::<u32>().unwrap(), nums[1].parse::<u32>().unwrap())
-            },
+                (
+                    nums[0].parse::<u32>().unwrap(),
+                    nums[1].parse::<u32>().unwrap(),
+                )
+            }
         };
         mock::mock(&mut buff, v1, v2);
+    }
+
+    if args.is_present("uwu") {
+        println!("UwU todo hehe~");
     }
 
     if args.is_present("clip-out") {
         clip.set_contents(buff).expect("Clip set fail");
     } else {
-        panic!("Only clipboard output is implemented");
+        std::io::stdout()
+            .write(buff.as_bytes())
+            .expect("Could not writie stdout");
     };
 }

@@ -4,5 +4,8 @@ gIvInG fLaVoR tO yOuR kEyBoArD wArRiOr ShEnNaNiGaNs.
 ### Current features
   * Many flavors
     * mOCkINg/SPongEBOb TExT
+    * UwU todo hehe~
+
   * Many interfaces
-    * just clipboard for now lol
+    * stdin/stdout
+    * system clipboard
