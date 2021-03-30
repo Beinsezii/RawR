@@ -1,18 +1,58 @@
-const PUNCTUATION: &[char] = &['.', ',', '!', '?', '\'', '"'];
+const CHARS: [char; 54] = [
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
+    't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+    'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-', '\'',
+];
 
-fn repwace(buff: &str, from: &str, to: &str, ) -> String {
-    let res = buff
-        .replace(from, to)
-        .replace(&from.to_lowercase(), &to.to_lowercase())
-        .replace(&from.to_uppercase(), &to.to_uppercase());
+fn title(buff: &str) -> String {
+    let mut first = true;
+    buff.chars()
+        .map(|mut c| {
+            if first {
+                c.make_ascii_uppercase();
+                first = false;
+            } else {
+                c.make_ascii_lowercase();
+            };
+            c
+        })
+        .collect::<String>()
+}
 
-    if from.len() >= 2 && to.len() >= 2 {
-        res.replace(
-            &(from[0..1].to_uppercase() + &from[1..].to_lowercase()),
-            &(to[0..1].to_uppercase() + &to[1..].to_lowercase()),
-        )
+fn repwace(buff: &str, from: &str, to: &str) -> String {
+    // copy of str's .replace, but matches case. Needs from and to to be same len.
+    if from.len() == to.len() {
+        let mut result = String::new();
+        let mut last_end = 0;
+        for (start, _part) in buff
+            .to_ascii_lowercase()
+            .match_indices(&from.to_ascii_lowercase())
+        {
+            result.push_str(unsafe { buff.get_unchecked(last_end..start) });
+            result.push_str(
+                &unsafe { buff.get_unchecked(start..start + to.len()) }
+                    .chars()
+                    .zip(to.chars())
+                    .map(|mut c| {
+                        if c.0.is_ascii_uppercase() {
+                            c.1.make_ascii_uppercase()
+                        } else {
+                            c.1.make_ascii_lowercase()
+                        }
+                        c.1
+                    })
+                    .collect::<String>(),
+            );
+            last_end = start + to.len();
+        }
+        result.push_str(unsafe { buff.get_unchecked(last_end..buff.len()) });
+        result
+    // 'dumb' fallback method. Checks literal, lower, UPPER, and 'Title'.
     } else {
-        res
+        buff.replace(from, to)
+            .replace(&from.to_ascii_lowercase(), &to.to_ascii_lowercase())
+            .replace(&from.to_ascii_uppercase(), &to.to_ascii_uppercase())
+            .replace(&title(&from), &title(&to))
     }
 }
 
@@ -32,7 +72,6 @@ fn extwend(buff: &str, suffix: &str, extension: &str) -> String {
 
 trait UwU {
     fn repwace(&self, from: &str, to: &str) -> String;
-
     fn extwend(&self, suffix: &str, extension: &str) -> String;
 }
 
@@ -54,77 +93,62 @@ impl UwU for String {
     }
 }
 
+fn process_word(word: &str) -> String {
+    match word.to_lowercase().as_str() {
+        "yes" => word.repwace("e", "i"),
+        "no" => word.repwace("o", "u"),
+        "the" | "this" | "that" => word.repwace("th", "d"),
+        "think" => word.repwace("th", "t"),
+        "have" => word.repwace("have", "haf"),
+        "when" | "which" | "what" => word.repwace("wh", "w"),
+        "your" | "you" => word.repwace("you", "u"),
+
+        "know" | "though" => unsafe { word.get_unchecked(..3) }.to_owned(),
+        "yeah" => unsafe { word.get_unchecked(0..2) }.to_owned(),
+
+        "give" => word.repwace("give", "gib"),
+
+        "sad" | "depressed" => word.to_owned() + " UnU",
+        "happy" | "excited" => word.to_owned() + " ^-^",
+        "sick" | "ill" => word.to_owned() + " >~<",
+        "pleased" | "satisfied" | "nice" => word.to_owned() + " UwU",
+
+        "fuck" => word.repwace("fuck", "fucky-wucky"),
+        "gross" => word.repwace("gross", "icky-wicky"),
+        "disgusting" => word.repwace("disgusting", "icky-wicky >~<"),
+        "wet" => word.repwace("wet", "moist"),
+        "soaked" => word.repwace("soaked", "moist OwO"),
+        _ => word.to_owned(),
+    }
+    .extwend("ss", "y")
+    .extwend("ck", "y")
+    .extwend("ug", "gy")
+    .repwace("l", "w")
+    .repwace("r", "w")
+    .repwace("aughty", "awty")
+    .repwace("ould", "ud")
+    .repwace("ime", "iem")
+    .repwace("ike", "iek")
+    .repwace("icks", "ickies")
+    .repwace("cause", "cuz")
+    .repwace("some", "sum")
+}
+
 pub fn uwu(buff: &mut String) {
-    *buff = buff
-        .split_ascii_whitespace()
-        .map(|word| {
-            let mut p_start = String::new();
-            let mut p_end = String::new();
-            for c in word.chars() {
-                if PUNCTUATION.contains(&c) {
-                    p_start.push(c)
-                } else {
-                    break;
-                }
+    let mut result = String::with_capacity(buff.len());
+    let mut word = String::new();
+    for c in buff.chars() {
+        if CHARS.contains(&c) {
+            word.push(c);
+        } else {
+            if !word.is_empty() {
+                result.push_str(&process_word(&word));
+                word.clear();
             }
-            for c in word.chars().rev() {
-                if PUNCTUATION.contains(&c) {
-                    p_end.insert(0, c)
-                } else {
-                    break;
-                }
-            }
-
-            let word = word
-                .strip_prefix(&p_start)
-                .expect("Bad uwu word prefix")
-                .strip_suffix(&p_end)
-                .expect("Bad uwu word suffix");
-
-            let mut word = match word.to_lowercase().as_str() {
-                "yes" => word.repwace("e", "i"),
-                "no" => word.repwace("o", "u"),
-                "the" | "this" | "that" => word.repwace("th", "d"),
-                "think" => word.repwace("th", "t"),
-                "have" => word.repwace("have", "haf"),
-                "when" | "which" | "what" => word.repwace("wh", "w"),
-                "your" | "you" => word.repwace("you", "u"),
-
-                "know" | "though" => word[..3].to_owned(),
-                "yeah" => word[0..2].to_owned(),
-
-                "give" => word.repwace("give", "gib"),
-
-                "sad" | "depressed" => word.to_owned() + " UnU",
-                "happy" | "excited" => word.to_owned() + " ^-^",
-                "sick" | "ill" => word.to_owned() + " >~<",
-                "pleased" | "satisfied" | "nice" => word.to_owned() + " UwU",
-
-                "fuck" => word.repwace("fuck", "fucky-wucky"),
-                "gross" => word.repwace("gross", "icky-wicky"),
-                "disgusting" => word.repwace("disgusting", "icky-wicky >~<"),
-                "wet" => word.repwace("wet", "moist"),
-                "soaked" => word.repwace("soaked", "moist OwO"),
-                _ => word.to_owned(),
-            }
-            .extwend("ss", "y")
-            .extwend("ck", "y")
-            .extwend("ug", "gy")
-            .repwace("l", "w")
-            .repwace("r", "w")
-            .repwace("aughty", "awty")
-            .repwace("ould", "ud")
-            .repwace("ime", "iem")
-            .repwace("ike", "iek")
-            .repwace("icks", "ickies")
-            .repwace("cause", "cuz")
-            .repwace("some", "sum")
-            ;
-
-            word.insert_str(0, &p_start);
-            word.push_str(&p_end);
-            word
-        })
-        .collect::<Vec<String>>()
-        .join(" ");
+            result.push(c);
+        };
+    }
+    result.push_str(&process_word(&word));
+    result.shrink_to_fit(); //99% of the time it'll be longer, but just in case.
+    *buff = result;
 }
