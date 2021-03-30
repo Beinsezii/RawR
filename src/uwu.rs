@@ -56,31 +56,38 @@ fn repwace(buff: &str, from: &str, to: &str) -> String {
     }
 }
 
-fn extwend(buff: &str, suffix: &str, extension: &str) -> String {
-    if buff.ends_with(&suffix.to_uppercase()) {
-        buff.to_owned() + &extension.to_uppercase()
-    } else if buff.ends_with(&suffix.to_lowercase()) {
-        buff.to_owned() + &extension.to_lowercase()
-    } else {
-        buff.to_owned()
+fn repwend(buff: &str, from: &str, to: &str) -> String {
+    match buff.get(0..buff.len() - from.len()) {
+        Some(prefix) => {
+            prefix.to_owned()
+                + &unsafe { buff.get_unchecked(buff.len() - from.len()..) }.repwace(from, to)
+        }
+        None => buff.to_owned(),
     }
 }
 
-// fn repwend(buff: &str, from: &str, to: &str) -> String {
-//     let (start, end) = buff.split_at(buff.to_lowercase().rfind(from).unwrap_or(0));
-// }
+fn repwart(buff: &str, from: &str, to: &str) -> String {
+    match buff.get(from.len()..) {
+        Some(suffix) => unsafe { buff.get_unchecked(0..from.len()) }.repwace(from, to) + suffix,
+        None => buff.to_owned(),
+    }
+}
 
 trait UwU {
     fn repwace(&self, from: &str, to: &str) -> String;
-    fn extwend(&self, suffix: &str, extension: &str) -> String;
+    fn repwend(&self, from: &str, to: &str) -> String;
+    fn repwart(&self, from: &str, to: &str) -> String;
 }
 
 impl UwU for str {
     fn repwace(&self, from: &str, to: &str) -> String {
         repwace(self, from, to)
     }
-    fn extwend(&self, suffix: &str, extension: &str) -> String {
-        extwend(self, suffix, extension)
+    fn repwend(&self, from: &str, to: &str) -> String {
+        repwend(self, from, to)
+    }
+    fn repwart(&self, from: &str, to: &str) -> String {
+        repwart(self, from, to)
     }
 }
 
@@ -88,8 +95,11 @@ impl UwU for String {
     fn repwace(&self, from: &str, to: &str) -> String {
         repwace(self, from, to)
     }
-    fn extwend(&self, suffix: &str, extension: &str) -> String {
-        extwend(self, suffix, extension)
+    fn repwend(&self, from: &str, to: &str) -> String {
+        repwend(self, from, to)
+    }
+    fn repwart(&self, from: &str, to: &str) -> String {
+        repwart(self, from, to)
     }
 }
 
@@ -120,9 +130,9 @@ fn process_word(word: &str) -> String {
         "soaked" => word.repwace("soaked", "moist OwO"),
         _ => word.to_owned(),
     }
-    .extwend("ss", "y")
-    .extwend("ck", "y")
-    .extwend("ug", "gy")
+    .repwend("ss", "ssy")
+    .repwend("ck", "cky")
+    .repwend("ug", "uggy")
     .repwace("l", "w")
     .repwace("r", "w")
     .repwace("aughty", "awty")
