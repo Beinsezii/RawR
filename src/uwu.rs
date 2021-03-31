@@ -49,27 +49,38 @@ fn repwace(buff: &str, from: &str, to: &str) -> String {
         result
     // 'dumb' fallback method. Checks literal, lower, UPPER, and 'Title'.
     } else {
-        buff.replace(from, to)
-            .replace(&from.to_ascii_lowercase(), &to.to_ascii_lowercase())
-            .replace(&from.to_ascii_uppercase(), &to.to_ascii_uppercase())
-            .replace(&title(&from), &title(&to))
+        let mut buff = buff.to_owned();
+        let mut dupes_check = Vec::<String>::new();
+        for v in [
+            (from.to_ascii_lowercase(), to.to_ascii_lowercase()),
+            (from.to_ascii_uppercase(), to.to_ascii_uppercase()),
+            (title(&from), title(&to)),
+            (from.to_owned(), to.to_owned()),
+        ].iter() {
+            if !dupes_check.contains(&v.0) {
+                buff = buff.replace(&v.0, &v.1)
+            };
+            dupes_check.push(v.0.clone());
+        }
+        buff
     }
 }
 
 fn repwend(buff: &str, from: &str, to: &str) -> String {
-    match buff.get(0..buff.len() - from.len()) {
-        Some(prefix) => {
-            prefix.to_owned()
-                + &unsafe { buff.get_unchecked(buff.len() - from.len()..) }.repwace(from, to)
-        }
-        None => buff.to_owned(),
+    if buff.len() >= from.len() {
+        unsafe { buff.get_unchecked(..buff.len() - from.len()) }.to_owned()
+            + &unsafe { buff.get_unchecked(buff.len() - from.len()..) }.repwace(from, to)
+    } else {
+        buff.to_owned()
     }
 }
 
 fn repwart(buff: &str, from: &str, to: &str) -> String {
-    match buff.get(from.len()..) {
-        Some(suffix) => unsafe { buff.get_unchecked(0..from.len()) }.repwace(from, to) + suffix,
-        None => buff.to_owned(),
+    if buff.len() >= from.len() {
+        unsafe { buff.get_unchecked(0..from.len()) }.repwace(from, to)
+            + unsafe { buff.get_unchecked(from.len()..) }
+    } else {
+        buff.to_owned()
     }
 }
 
