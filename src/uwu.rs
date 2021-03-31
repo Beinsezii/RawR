@@ -1,7 +1,7 @@
-const CHARS: [char; 54] = [
+const CHARS: [char; 53] = [
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
     't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
-    'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-', '\'',
+    'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '\'',
 ];
 
 fn title(buff: &str) -> String {
@@ -116,43 +116,59 @@ impl UwU for String {
 
 fn process_word(word: &str) -> String {
     match word.to_lowercase().as_str() {
+        // common word modifications
         "yes" => word.repwace("e", "i"),
         "no" => word.repwace("o", "u"),
         "the" | "this" | "that" => word.repwace("th", "d"),
         "think" => word.repwace("th", "t"),
-        "have" => word.repwace("have", "haf"),
+        "have" | "haven't" => word.repwace("have", "has"),
         "when" | "which" | "what" => word.repwace("wh", "w"),
         "your" | "you" => word.repwace("you", "u"),
+        "you're" => word.repwace("you're", "ur"),
+        "give" => word.repwace("give", "gib"),
+        "love" | "loves" => word.repwace("love", "wuv"),
+        "boy" => word.repwace("y", "i"),
+        "girl" => word.repwace("i", "u"),
+        "good" => word.repwace("oo", "u"),
 
+        // shortens
         "know" | "though" => unsafe { word.get_unchecked(..3) }.to_owned(),
         "yeah" => unsafe { word.get_unchecked(0..2) }.to_owned(),
 
-        "give" => word.repwace("give", "gib"),
-
+        // unnecessary emotes
         "sad" | "depressed" => word.to_owned() + " UnU",
-        "happy" | "excited" => word.to_owned() + " ^-^",
+        "happy" | "excited" | "pleasant" => word.to_owned() + " ^-^",
         "sick" | "ill" => word.to_owned() + " >~<",
-        "pleased" | "satisfied" | "nice" => word.to_owned() + " UwU",
+        "pleased" | "satisfied" | "nice" => word.to_owned() + " uwu",
+        "sorry" => word.to_owned() + " O~O",
+        "oop" | "oops" => word.to_owned() + " >.>",
+        "worry" | "worried" => word.to_owned() + " >n<",
 
+        // extra-special words
         "fuck" => word.repwace("fuck", "fucky-wucky"),
         "gross" => word.repwace("gross", "icky-wicky"),
         "disgusting" => word.repwace("disgusting", "icky-wicky >~<"),
         "wet" => word.repwace("wet", "moist"),
         "soaked" => word.repwace("soaked", "moist OwO"),
+        "hugs" => word.repwace("hugs", "glomps >v<"),
+        "hold" => word.repwace("hold", "squish"),
+        "holds" => word.repwace("holds", "squishes"),
+        "honey" => word.repwace("honey", "huni"),
         _ => word.to_owned(),
     }
     .repwend("ss", "ssy")
     .repwend("ck", "cky")
     .repwend("ug", "uggy")
+    .repwend("icks", "ickies")
+    .repwend("aughty", "awty")
     .repwace("l", "w")
     .repwace("r", "w")
-    .repwace("aughty", "awty")
     .repwace("ould", "ud")
     .repwace("ime", "iem")
     .repwace("ike", "iek")
-    .repwace("icks", "ickies")
     .repwace("cause", "cuz")
     .repwace("some", "sum")
+    .repwace("friend", "fren")
 }
 
 pub fn uwu(buff: &mut String) {
