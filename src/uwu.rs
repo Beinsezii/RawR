@@ -130,6 +130,7 @@ fn process_word(word: &str) -> String {
         "boy" => word.repwace("y", "i"),
         "girl" => word.repwace("i", "u"),
         "good" => word.repwace("oo", "u"),
+        "cute" => word.repwace("cute", "coot"),
 
         // shortens
         "know" | "though" => unsafe { word.get_unchecked(..3) }.to_owned(),
@@ -143,6 +144,7 @@ fn process_word(word: &str) -> String {
         "sorry" => word.to_owned() + " O~O",
         "oop" | "oops" => word.to_owned() + " >.>",
         "worry" | "worried" => word.to_owned() + " >n<",
+        "friend" | "friendly" | "friendship" => word.to_owned() + " :D",
 
         // extra-special words
         "fuck" => word.repwace("fuck", "fucky-wucky"),
@@ -161,14 +163,14 @@ fn process_word(word: &str) -> String {
     .repwend("ug", "uggy")
     .repwend("icks", "ickies")
     .repwend("aughty", "awty")
-    .repwace("l", "w")
-    .repwace("r", "w")
     .repwace("ould", "ud")
     .repwace("ime", "iem")
     .repwace("ike", "iek")
     .repwace("cause", "cuz")
     .repwace("some", "sum")
     .repwace("friend", "fren")
+    .repwace("l", "w")
+    .repwace("r", "w")
 }
 
 pub fn uwu(buff: &mut String) {
