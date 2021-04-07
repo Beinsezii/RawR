@@ -3,13 +3,14 @@ use std::io::prelude::*;
 mod mock;
 mod uwu;
 
-pub enum Source {
+pub enum Source <'a> {
     Stdio,
     Clip,
     File(String),
+    String(&'a mut String),
 }
 
-impl Default for Source {
+impl Default for Source<'_> {
     fn default() -> Self{Source::Stdio}
 }
 
@@ -35,6 +36,7 @@ pub fn rawr(mock: bool, uwu: bool, source_in: Source, source_out: Source, args: 
         },
         Source::Clip => clip.get_contents().expect("Clip get fail"),
         Source::File(file) => String::from_utf8(std::fs::read(file).expect("Input file read error")).expect("Input file invalid UTF-8"),
+        Source::String(string) => string.to_owned(),
     };
 
     if uwu {
@@ -53,5 +55,6 @@ pub fn rawr(mock: bool, uwu: bool, source_in: Source, source_out: Source, args: 
         },
         Source::Clip => clip.set_contents(buff).expect("Clip set fail"),
         Source::File(file) => std::fs::write(file, buff).expect("Output file write error"),
+        Source::String(string) => *string = buff,
     };
 }
