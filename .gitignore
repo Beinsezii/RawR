@@ -1,1 +1,5 @@
 /target
+/bin
+bench.txt
+RawR-Linux.tar.zst
+RawR-Windows.zip
