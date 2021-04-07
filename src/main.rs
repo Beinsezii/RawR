@@ -33,7 +33,7 @@ fn mock_range_valid(arg: String) -> Result<(), String> {
 fn main() {
     let args = App::new("RawR")
         .author("Beinsezii")
-        .version("0.2.0")
+        .version("0.3.0")
         .about("Give your text some special flavor")
         .long_about(
             "Give your text some special flavor\nDefaults to reading/writing from stdin/stdout",
@@ -41,9 +41,15 @@ fn main() {
         .arg(
             Arg::with_name("mock")
                 .help("mOCkINg/SPongEBOb TExT")
-                .long("mock"),
+                .long("mock")
+                .short("m"),
         )
-        .arg(Arg::with_name("uwu").long("uwu"))
+        .arg(
+            Arg::with_name("uwu")
+                .help("UwU vewy coot and fwenwy :D text")
+                .long("uwu")
+                .short("u"),
+        )
         .group(
             ArgGroup::with_name("flavor")
                 .args(&["mock", "uwu"])
@@ -54,6 +60,7 @@ fn main() {
             Arg::with_name("mock-range")
                 .help("Controls minimum and maximum consecutive letters of a case. Number or range")
                 .long("mock-range")
+                .short("R")
                 .takes_value(true)
                 .default_value("1-4")
                 .validator(mock_range_valid),
@@ -64,8 +71,15 @@ fn main() {
                 .short("c")
                 .long("clip-in"),
         )
+        .arg(
+            Arg::with_name("file-in")
+                .help("Read from a file")
+                .short("f")
+                .long("file-in")
+                .takes_value(true),
+        )
         .group(
-            ArgGroup::with_name("input").args(&["clip-in"]), // .required(false)
+            ArgGroup::with_name("input").args(&["clip-in", "file-in"]),
         )
         .arg(
             Arg::with_name("clip-out")
@@ -73,8 +87,15 @@ fn main() {
                 .short("C")
                 .long("clip-out"),
         )
+        .arg(
+            Arg::with_name("file-out")
+                .help("Output to a file")
+                .short("F")
+                .long("file-out")
+                .takes_value(true),
+        )
         .group(
-            ArgGroup::with_name("output").args(&["clip-out"]), // .required(false)
+            ArgGroup::with_name("output").args(&["clip-out", "file-out"]),
         )
         .get_matches();
 
@@ -86,11 +107,23 @@ fn main() {
         args.is_present("uwu"),
         if args.is_present("clip-in") {
             rawr::Source::Clip
+        } else if args.is_present("file-in") {
+            rawr::Source::File(
+                args.value_of("file-in")
+                    .expect("Invalid file-in arg")
+                    .to_owned(),
+            )
         } else {
             rawr::Source::Stdio
         },
         if args.is_present("clip-out") {
             rawr::Source::Clip
+        } else if args.is_present("file-out") {
+            rawr::Source::File(
+                args.value_of("file-out")
+                    .expect("Invalid file-out arg")
+                    .to_owned(),
+            )
         } else {
             rawr::Source::Stdio
         },

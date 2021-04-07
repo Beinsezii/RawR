@@ -6,7 +6,7 @@ mod uwu;
 pub enum Source {
     Stdio,
     Clip,
-    File,
+    File(String),
 }
 
 impl Default for Source {
@@ -34,7 +34,7 @@ pub fn rawr(mock: bool, uwu: bool, source_in: Source, source_out: Source, args: 
             String::from_utf8(bytes).expect("Invalid UTF-8 for stdin")
         },
         Source::Clip => clip.get_contents().expect("Clip get fail"),
-        Source::File => panic!("File reading not implemented yet"),
+        Source::File(file) => String::from_utf8(std::fs::read(file).expect("Input file read error")).expect("Input file invalid UTF-8"),
     };
 
     if uwu {
@@ -52,6 +52,6 @@ pub fn rawr(mock: bool, uwu: bool, source_in: Source, source_out: Source, args: 
             .expect("Could not writie stdout");
         },
         Source::Clip => clip.set_contents(buff).expect("Clip set fail"),
-        Source::File => panic!("File writing not implemented yet"),
+        Source::File(file) => std::fs::write(file, buff).expect("Output file write error"),
     };
 }

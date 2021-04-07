@@ -56,7 +56,9 @@ fn repwace(buff: &str, from: &str, to: &str) -> String {
             (from.to_ascii_uppercase(), to.to_ascii_uppercase()),
             (title(&from), title(&to)),
             (from.to_owned(), to.to_owned()),
-        ].iter() {
+        ]
+        .iter()
+        {
             if !dupes_check.contains(&v.0) {
                 buff = buff.replace(&v.0, &v.1)
             };
@@ -116,6 +118,7 @@ impl UwU for String {
 
 fn process_word(word: &str) -> String {
     match word.to_lowercase().as_str() {
+        // first level modifies and immediately breaks
         // common word modifications
         "yes" => word.repwace("e", "i"),
         "no" => word.repwace("o", "u"),
@@ -136,16 +139,6 @@ fn process_word(word: &str) -> String {
         "know" | "though" => unsafe { word.get_unchecked(..3) }.to_owned(),
         "yeah" => unsafe { word.get_unchecked(0..2) }.to_owned(),
 
-        // unnecessary emotes
-        "sad" | "depressed" => word.to_owned() + " UnU",
-        "happy" | "excited" | "pleasant" => word.to_owned() + " ^-^",
-        "sick" | "ill" => word.to_owned() + " >~<",
-        "pleased" | "satisfied" | "nice" => word.to_owned() + " uwu",
-        "sorry" => word.to_owned() + " O~O",
-        "oop" | "oops" => word.to_owned() + " >.>",
-        "worry" | "worried" => word.to_owned() + " >n<",
-        "friend" | "friendly" | "friendship" => word.to_owned() + " :D",
-
         // extra-special words
         "fuck" => word.repwace("fuck", "fucky-wucky"),
         "gross" => word.repwace("gross", "icky-wicky"),
@@ -156,21 +149,36 @@ fn process_word(word: &str) -> String {
         "hold" => word.repwace("hold", "squish"),
         "holds" => word.repwace("holds", "squishes"),
         "honey" => word.repwace("honey", "huni"),
-        _ => word.to_owned(),
+        "motherfucker" => word.repwace("motherfucker", "meanie-poo"),
+
+        // modifies all words and contextually modifies first
+        word2 => match word2 {
+            // unnecessary emotes
+            "sad" | "depressed" => word.to_owned() + " UnU",
+            "happy" | "excited" | "pleasant" => word.to_owned() + " ^-^",
+            "sick" | "ill" => word.to_owned() + " >~<",
+            "pleased" | "satisfied" | "nice" => word.to_owned() + " uwu",
+            "sorry" => word.to_owned() + " O~O",
+            "oop" | "oops" => word.to_owned() + " >.>",
+            "worry" | "worried" => word.to_owned() + " >n<",
+            "friend" | "friendly" | "friendship" => word.to_owned() + " :D",
+
+            _ => word.to_owned(),
+        }
+        .repwend("ss", "ssy")
+        .repwend("ck", "cky")
+        .repwend("ug", "uggy")
+        .repwend("icks", "ickies")
+        .repwend("aughty", "awty")
+        .repwace("ould", "ud")
+        .repwace("ime", "iem")
+        .repwace("ike", "iek")
+        .repwace("cause", "cuz")
+        .repwace("some", "sum")
+        .repwace("friend", "fren")
+        .repwace("l", "w")
+        .repwace("r", "w"),
     }
-    .repwend("ss", "ssy")
-    .repwend("ck", "cky")
-    .repwend("ug", "uggy")
-    .repwend("icks", "ickies")
-    .repwend("aughty", "awty")
-    .repwace("ould", "ud")
-    .repwace("ime", "iem")
-    .repwace("ike", "iek")
-    .repwace("cause", "cuz")
-    .repwace("some", "sum")
-    .repwace("friend", "fren")
-    .repwace("l", "w")
-    .repwace("r", "w")
 }
 
 pub fn uwu(buff: &mut String) {

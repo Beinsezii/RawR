@@ -1,6 +1,6 @@
 [package]
 name = "rawr"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Beinsezii <beinsezii@gmail.com>"]
 edition = "2018"
 
@@ -11,3 +11,13 @@ clap = "2.33"
 copypasta = "0.7"
 copypasta-ext = "0.3"
 rand = "0.8"
+
+[profile.release]
+lto = "fat"
+opt-level = 3
+codegen-units = 1
+
+[profile.bench]
+lto = "fat"
+opt-level = 3
+codegen-units = 1
