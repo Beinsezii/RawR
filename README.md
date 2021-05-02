@@ -1,4 +1,4 @@
-# RawR 0.3.0
+# RawR 0.4.0
 gIvInG fLaVoR tO yOuR kEyBoArD wArRiOr ShEnNaNiGaNs.
 
 ### Current features
