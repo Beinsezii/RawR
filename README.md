@@ -5,6 +5,7 @@ gIvInG fLaVoR tO yOuR kEyBoArD wArRiOr ShEnNaNiGaNs.
   * Many flavors
     * mOCkINg/SPongEBOb TExT
     * UwU vewy coot and fwenwy :D text
+    * Encode/decode with a password
 
 
   * Many interfaces
