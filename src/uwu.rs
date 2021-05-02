@@ -137,7 +137,7 @@ fn process_word(word: &str) -> String {
 
         // shortens
         "know" | "though" => unsafe { word.get_unchecked(..3) }.to_owned(),
-        "yeah" => unsafe { word.get_unchecked(0..2) }.to_owned(),
+        "yeah" | "low" => unsafe { word.get_unchecked(0..2) }.to_owned(),
 
         // extra-special words
         "fuck" => word.repwace("fuck", "fucky-wucky"),

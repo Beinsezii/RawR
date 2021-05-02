@@ -2,6 +2,7 @@ use copypasta_ext::prelude::*;
 use std::io::prelude::*;
 mod mock;
 mod uwu;
+mod cipher;
 
 pub enum Source <'a> {
     Stdio,
@@ -17,13 +18,18 @@ impl Default for Source<'_> {
 pub struct Args {
     pub mock_min: u32,
     pub mock_max: u32,
+    pub cipher_decode: bool,
 }
 
 impl Default for Args {
-    fn default() -> Self { Args{mock_min: 1, mock_max: 3} }
+    fn default() -> Self { Args{
+        mock_min: 1,
+        mock_max: 3,
+        cipher_decode: false,
+    } }
 }
 
-pub fn rawr(mock: bool, uwu: bool, source_in: Source, source_out: Source, args: Args) {
+pub fn rawr(uwu: bool, mock: bool, cipher: &str, source_in: Source, source_out: Source, args: Args) {
     let mut clip = copypasta_ext::x11_bin::ClipboardContext::new().expect("Clip provider fail");
 
     let mut buff = match source_in {
@@ -39,12 +45,20 @@ pub fn rawr(mock: bool, uwu: bool, source_in: Source, source_out: Source, args: 
         Source::String(string) => string.to_owned(),
     };
 
+    if !cipher.is_empty() && args.cipher_decode {
+        cipher::cipher(cipher, args.cipher_decode, &mut buff);
+    }
+
     if uwu {
         uwu::uwu(&mut buff);
     }
 
     if mock {
         mock::mock(&mut buff, args.mock_min, args.mock_max);
+    }
+
+    if !cipher.is_empty() && !args.cipher_decode {
+        cipher::cipher(cipher, args.cipher_decode, &mut buff);
     }
 
     match source_out {
