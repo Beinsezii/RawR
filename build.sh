@@ -1,9 +1,9 @@
-cargo build --release --target x86_64-unknown-linux-gnu
-cargo build --release --target x86_64-pc-windows-gnu
+cargo build --release --features gui --target x86_64-unknown-linux-gnu
+cargo build --release --features gui --target x86_64-pc-windows-gnu
 mkdir ./bin 2> /dev/null
 mkdir ./bin/windows 2> /dev/null
 mkdir ./bin/linux 2> /dev/null
-for b in rawr rawr_mock_clip rawr_uwu_clip
+for b in rawr rawr_mock_clip rawr_uwu_clip rawr_gui
 do
 cp ./target/x86_64-unknown-linux-gnu/release/$b ./bin/linux/
 cp ./target/x86_64-pc-windows-gnu/release/$b.exe ./bin/windows/

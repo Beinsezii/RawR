@@ -1,6 +1,6 @@
 [package]
 name = "rawr"
-version = "0.4.0"
+version = "1.0.0"
 authors = ["Beinsezii <beinsezii@gmail.com>"]
 edition = "2018"
 
@@ -11,6 +11,15 @@ clap = "2.33"
 copypasta = "0.7"
 copypasta-ext = "0.3"
 rand = "0.8"
+
+eframe = {version = "0.11", optional=true}
+
+[features]
+gui = ["eframe"]
+
+[[bin]]
+name = "rawr_gui"
+required-features = ["gui"]
 
 [profile.release]
 lto = "fat"

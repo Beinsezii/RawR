@@ -1,4 +1,4 @@
-# RawR 0.4.0
+# RawR 1.0.0
 gIvInG fLaVoR tO yOuR kEyBoArD wArRiOr ShEnNaNiGaNs.
 
 ### Current features
@@ -9,6 +9,7 @@ gIvInG fLaVoR tO yOuR kEyBoArD wArRiOr ShEnNaNiGaNs.
 
 
   * Many interfaces
+    * Graphical interface
     * stdin/stdout
     * system clipboard
     * file i/o
