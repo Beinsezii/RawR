@@ -7,13 +7,12 @@ const CHARS: [char; 62] = [
 ];
 
 pub fn cipher(password: &str, decode: bool, buff: &mut String) {
-    let mut seed = String::new();
+    let mut seed = 0u64;
     for c in password.chars() {
-        seed.push_str(&format!("{}", c as u32));
+        seed += c as u64;
     }
 
-    let mut rng: rand::rngs::StdRng =
-        rand::SeedableRng::seed_from_u64(seed.parse::<u64>().expect("Seed unwrap fail"));
+    let mut rng: rand::rngs::StdRng = rand::SeedableRng::seed_from_u64(seed);
 
     if decode {
         *buff = buff

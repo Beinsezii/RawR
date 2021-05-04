@@ -33,7 +33,7 @@ fn mock_range_valid(arg: String) -> Result<(), String> {
 fn main() {
     let args = App::new("RawR")
         .author("Beinsezii")
-        .version("1.0.0")
+        .version("1.0.1")
         .about("Give your text some special flavor")
         .long_about(
             "Give your text some special flavor\nDefaults to reading/writing from stdin/stdout",
