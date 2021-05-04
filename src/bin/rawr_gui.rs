@@ -78,17 +78,24 @@ impl epi::App for App {
                 cols[1].horizontal(|col| {
                     rawr!(col.checkbox(&mut self.mock, "mOcK").changed());
                     col.spacing_mut().item_spacing = egui::vec2(2.0, 0.0);
-                    rawr!(col
+                    if col
                         .add(
                             egui::widgets::DragValue::new(&mut self.mock_min)
                                 .clamp_range(1..=u32::MAX),
                         )
-                        .changed());
+                        .changed()
+                    {
+                        // updating the clamp doesn't push the new val
+                        if self.mock_min > self.mock_max {
+                            self.mock_max = self.mock_min
+                        };
+                        rawr!()
+                    };
                     col.heading(":");
                     rawr!(col
                         .add(
                             egui::widgets::DragValue::new(&mut self.mock_max)
-                                .clamp_range(1..=u32::MAX),
+                                .clamp_range(self.mock_min..=u32::MAX),
                         )
                         .changed());
                 });
