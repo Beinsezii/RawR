@@ -1,6 +1,6 @@
 [package]
 name = "rawr"
-version = "1.0.1"
+version = "2.0.0"
 authors = ["Beinsezii <beinsezii@gmail.com>"]
 edition = "2018"
 
@@ -16,10 +16,7 @@ eframe = {version = "0.11", optional=true}
 
 [features]
 gui = ["eframe"]
-
-[[bin]]
-name = "rawr_gui"
-required-features = ["gui"]
+default = ["gui"]
 
 [profile.release]
 lto = "fat"

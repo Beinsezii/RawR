@@ -1,12 +1,12 @@
-fn randrange(min: u32, max: u32) -> u32 {
-    if max <= min {return std::cmp::min(min, max)}
-    (rand::random::<u32>() % (max-min)) + min
+fn randrange(range: &std::ops::RangeInclusive<usize>) -> usize {
+    if range.start() <= range.end() {return std::cmp::min(*range.start(), *range.end())}
+    (rand::random::<usize>() % (range.end()-range.start())) + range.start()
 }
 
-pub fn mock(buff: &mut String, min: u32, max: u32) {
+pub fn mock(buff: &mut String, range: &std::ops::RangeInclusive<usize>) {
     let mut cap = false;
     let mut i = 0;
-    let mut tar = randrange(min, max);
+    let mut tar = randrange(range);
     let mut result = String::with_capacity(buff.len());
 
     for var in buff.chars(){
@@ -19,7 +19,7 @@ pub fn mock(buff: &mut String, min: u32, max: u32) {
         if u != l {i += 1};
         if i >= tar {
             cap = !cap;
-            tar = randrange(min, max);
+            tar = randrange(range);
             i = 0;
         }
     }

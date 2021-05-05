@@ -1,15 +1,16 @@
 use copypasta_ext::prelude::*;
 use eframe::{egui, epi};
 
-struct App {
-    input: String,
-    output: String,
-    uwu: bool,
-    mock: bool,
-    mock_min: u32,
-    mock_max: u32,
-    cipher: String,
-    cipher_decode: bool,
+pub struct App {
+    pub input: String,
+    pub output: String,
+    pub update: bool,
+    pub uwu: bool,
+    pub mock: bool,
+    pub mock_min: usize,
+    pub mock_max: usize,
+    pub cipher: String,
+    pub cipher_decode: bool,
 }
 
 impl Default for App {
@@ -17,6 +18,7 @@ impl Default for App {
         Self {
             input: String::new(),
             output: String::new(),
+            update: true,
             uwu: true,
             mock: false,
             mock_min: 1,
@@ -33,29 +35,27 @@ impl epi::App for App {
     }
 
     fn update(&mut self, ctx: &egui::CtxRef, _frame: &mut epi::Frame<'_>) {
-        // you can go rawr!(...) to update the output on .changed() == true
-        macro_rules! rawr {
-            () => {
-                rawr::rawr(
-                    self.uwu,
-                    self.mock,
-                    &self.cipher,
-                    rawr::Source::String(&mut self.input),
-                    rawr::Source::String(&mut self.output),
-                    rawr::Args {
-                        mock_min: self.mock_min,
-                        mock_max: self.mock_max,
-                        cipher_decode: self.cipher_decode,
-                        ..Default::default()
-                    },
-                )
-            };
+        macro_rules! up {
             ($x:expr) => {
                 if $x {
-                    rawr!()
+                    self.update = true
                 }
             };
         }
+
+        if self.update {
+            rawr::rawr(rawr::Rawrgs {
+                uwu: self.uwu,
+                mock: self.mock,
+                cipher: self.cipher.clone(),
+                input: rawr::Source::String(&mut self.input),
+                output: rawr::Source::String(&mut self.output),
+                mock_range: self.mock_min..=self.mock_max,
+                cipher_decode: self.cipher_decode,
+                ..Default::default()
+            });
+            self.update = false;
+        };
 
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.columns(3, |cols| {
@@ -64,24 +64,24 @@ impl epi::App for App {
                         .expect("Clip provider fail")
                         .get_contents()
                         .expect("Clip get fail");
-                    rawr!();
+                    self.update = true;
                 }
-                rawr!(cols[0]
+                up!(cols[0]
                     .add(
                         egui::widgets::TextEdit::multiline(&mut self.input)
                             .hint_text("Write text here to process")
                     )
                     .changed());
 
-                rawr!(cols[1].checkbox(&mut self.uwu, "UwU").changed());
+                up!(cols[1].checkbox(&mut self.uwu, "UwU").changed());
 
                 cols[1].horizontal(|col| {
-                    rawr!(col.checkbox(&mut self.mock, "mOcK").changed());
+                    up!(col.checkbox(&mut self.mock, "mOcK").changed());
                     col.spacing_mut().item_spacing = egui::vec2(2.0, 0.0);
                     if col
                         .add(
                             egui::widgets::DragValue::new(&mut self.mock_min)
-                                .clamp_range(1..=u32::MAX),
+                                .clamp_range(1..=usize::MAX),
                         )
                         .changed()
                     {
@@ -89,25 +89,25 @@ impl epi::App for App {
                         if self.mock_min > self.mock_max {
                             self.mock_max = self.mock_min
                         };
-                        rawr!()
+                        self.update = true;
                     };
                     col.heading(":");
-                    rawr!(col
+                    up!(col
                         .add(
                             egui::widgets::DragValue::new(&mut self.mock_max)
-                                .clamp_range(self.mock_min..=u32::MAX),
+                                .clamp_range(self.mock_min..=usize::MAX),
                         )
                         .changed());
                 });
 
                 cols[1].horizontal(|col| {
                     col.label("Cipher:");
-                    rawr!(col
+                    up!(col
                         .text_edit_singleline(&mut self.cipher)
                         .on_hover_text("Password for cipher")
                         .changed());
                 });
-                rawr!(cols[1]
+                up!(cols[1]
                     .checkbox(&mut self.cipher_decode, "Cipher Decode")
                     .on_hover_text("Decode an existing cipher instead of creating a new one")
                     .changed());
@@ -117,7 +117,7 @@ impl epi::App for App {
                         .expect("Clip provider fail")
                         .set_contents(self.output.clone())
                         .expect("Clip set fail");
-                    rawr!();
+                    self.update = true;
                 }
                 cols[2].add(
                     egui::widgets::TextEdit::multiline(&mut self.output)
@@ -126,8 +126,4 @@ impl epi::App for App {
             });
         });
     }
-}
-
-fn main() {
-    eframe::run_native(Box::new(App::default()));
 }
