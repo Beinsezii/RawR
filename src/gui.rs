@@ -31,7 +31,7 @@ impl Default for App {
 
 impl epi::App for App {
     fn name(&self) -> &str {
-        "egui name"
+        "RawR 2.0.1"
     }
 
     fn update(&mut self, ctx: &egui::CtxRef, _frame: &mut epi::Frame<'_>) {

@@ -33,7 +33,7 @@ fn mock_range_valid(arg: String) -> Result<(), String> {
 pub fn process<'a>() -> (rawr::Rawrgs<'a>, bool) {
     let args = App::new("RawR")
         .author("Beinsezii")
-        .version("2.0.0")
+        .version("2.0.1")
         .about(
             "Give your text some special flavor\nDefaults to reading/writing from stdin/stdout.",
         )

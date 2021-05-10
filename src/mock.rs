@@ -1,5 +1,5 @@
 fn randrange(range: &std::ops::RangeInclusive<usize>) -> usize {
-    if range.start() <= range.end() {return std::cmp::min(*range.start(), *range.end())}
+    if range.start() >= range.end() {return std::cmp::min(*range.start(), *range.end())}
     (rand::random::<usize>() % (range.end()-range.start())) + range.start()
 }
 
