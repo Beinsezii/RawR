@@ -117,7 +117,6 @@ impl epi::App for App {
                         .expect("Clip provider fail")
                         .set_contents(self.output.clone())
                         .expect("Clip set fail");
-                    self.update = true;
                 }
                 cols[2].add(
                     egui::widgets::TextEdit::multiline(&mut self.output)
